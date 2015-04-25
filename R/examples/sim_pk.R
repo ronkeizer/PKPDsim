@@ -12,7 +12,7 @@ p <- list(CL = 5,
 
 r1 <- new_regimen(amt = 100,
                   type = "infusion",
-                  t_inf = 4,
+                  t_inf = 12,
                   interval = 24,
                   n = 2)
 
@@ -23,24 +23,39 @@ r1 <- new_regimen(amt = 100,
 #for(i in 1:10) {
 system.time({
   dat <- sim_ode (ode = "pk_1cmt_iv",
-                  step_size = 1,
                   n_ind = 1,
                   omega = cv_to_omega(par_cv = list("CL"=0.1, "V"=0.1), p),
                   par = p,
                   regimen = r1,
-                  cpp = TRUE, cpp_recompile = TRUE)
-  ggplot(dat, aes(x=t, y=y, group=id)) +
-    geom_line() +
-    facet_wrap(~comp, scales="free")
+                  cpp = TRUE, cpp_recompile = TRUE, cpp_show_function = FALSE)
 })
+ggplot(dat, aes(x=t, y=y, group=id)) +
+  geom_line() +
+  facet_wrap(~comp, scales="free")
+
+dat <- sim_ode (ode = "pk_1cmt_iv_mm",
+                  n_ind = 10000,
+                  omega = cv_to_omega(par_cv = list("VMAX"=0.1, "KM"=0.1), p),
+                  par = list(VMAX=20, V=50, KM=5),
+                  regimen = r1,
+                  cpp = TRUE, cpp_recompile = FALSE, cpp_show_function = FALSE)
+ggplot(dat, aes(x=t, y=y, group=id)) +
+  geom_line() + scale_y_log10() +
+  facet_wrap(~comp, scales="free")
+
+
 system.time({
   dat2 <- sim_ode (ode = "pk_1cmt_oral",
                    step_size = 1,
                    par = p,
                 n_ind = 100,
                 regimen = r1,
-                cpp = FALSE, cpp_recompile=TRUE)
+                cpp = TRUE, cpp_recompile=TRUE)
 })
+ggplot(dat2, aes(x=t, y=y, group=id)) +
+  geom_line() +
+  facet_wrap(~comp, scales="free")
+
 
 system.time({
   for(i in 1:100) {
