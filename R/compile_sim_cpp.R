@@ -22,6 +22,6 @@ compile_sim_cpp <- function(func, p) {
              paste0(readLines(cpp_file), collapse="\n"),
              paste0(cpp_code, collapse = "\n"))
 #     cat(sim_func)
-    sourceCpp(code=sim_func)
+    Rcpp::sourceCpp(code=sim_func)
   }
 }
