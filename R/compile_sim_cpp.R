@@ -28,5 +28,5 @@ compile_sim_cpp <- function(func, p, cpp_show_function) {
   if(cpp_show_function) {
     cat(sim_func)
   }
-  sourceCpp(code=sim_func)
+  Rcpp::sourceCpp(code=sim_func)
 }
