@@ -48,12 +48,14 @@ parse_regimen <- function(regimen, t_max, t_obs, t_tte, p, covariates, model = N
       })
     }
     covt <- data.frame(covt)
+
     # add covariate update times as dummy dose
     regimen$dose_times <- c(regimen$dose_times, covt$time)
     regimen$dose_amts <- c(regimen$dose_amts, rep(0, length(covt$time)))
     regimen$type <- c(regimen$type, rep(0, length(covt$time)))
     regimen$dose_cmt <- c(regimen$dose_cmt, rep(0, length(covt$time)))
     regimen$t_inf <- c(regimen$t_inf, rep(0, length(covt$time)))
+    regimen$per_unit <- c(regimen$per_unit, rep(0, length(covt$time)))
 
     ord <- order(regimen$dose_times)
     regimen$dose_times <- regimen$dose_times[ord]
@@ -61,6 +63,7 @@ parse_regimen <- function(regimen, t_max, t_obs, t_tte, p, covariates, model = N
     regimen$type <- regimen$type[ord]
     regimen$dose_cmt  <- regimen$dose_cmt[ord]
     regimen$t_inf  <- regimen$t_inf[ord]
+    regimen$per_unit <- regimen$per_unit[ord]
     regimen$evid <- 2
     regimen$bioav <- 0
   }
@@ -76,7 +79,8 @@ parse_regimen <- function(regimen, t_max, t_obs, t_tte, p, covariates, model = N
                   t_inf = regimen$t_inf,
                   evid = 1,
                   bioav = bioav,
-                  rate = 0))
+                  rate = 0,
+                  per_unit = 1))
   if(sum(regimen$t_inf > 0) > 0) {
     dos$rate[regimen$t_inf > 0] <- regimen$dose_amts[regimen$t_inf > 0] / regimen$t_inf[regimen$t_inf > 0]
   }
@@ -89,7 +93,8 @@ parse_regimen <- function(regimen, t_max, t_obs, t_tte, p, covariates, model = N
                           t_inf = 0,
                           evid = 2,
                           bioav = 0,
-                          rate = 0)
+                          rate = 0,
+                          per_unit = 0)
     dos[(length(dos[,1])+1) : (length(dos[,1])+length(dos_t2[,1])),] <- dos_t2
     dos <- data.frame(dos)
   }
@@ -106,7 +111,8 @@ parse_regimen <- function(regimen, t_max, t_obs, t_tte, p, covariates, model = N
          t_inf = 0,
          evid = 0,
          bioav = 0,
-         rate = 0)
+         rate = 0,
+         per_unit = 0)
       design <- design[order(design$t, -design$dose),]
     }
   }
@@ -122,7 +128,8 @@ parse_regimen <- function(regimen, t_max, t_obs, t_tte, p, covariates, model = N
          t_inf = 0,
          evid = 2,
          bioav = 0,
-         rate = 0)
+         rate = 0,
+         per_unit = 0)
       design[(length(design[,1])+1) : (length(design[,1])+length(t_diff)),] <- tmp[order(tmp$t, -tmp$dose),]
     }
   }
@@ -172,6 +179,13 @@ parse_regimen <- function(regimen, t_max, t_obs, t_tte, p, covariates, model = N
     # remove covariate points where there is also a dose
     design <- design[!duplicated(paste0(design$t, "_", design$dose, "_", design$dum)),]
     design <- design[!(design$t %in% covt$time & design$t %in% regimen$dose_times & design$dose == 0 & design$dum == 0) | design$t %in% t_obs,]
+  }
+
+  browser()
+  if(!all(regimen$per_unit == 1)) {
+    design$per_unit <- design[[paste0("cov_", design$per_unit[1])]]
+  } else {
+    design$per_unit <- 1
   }
   design <- design[order(design$t, -design$dum),]
   return(design)

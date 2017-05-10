@@ -36,13 +36,15 @@ new_regimen <- function(
     checks = TRUE,
     ss = FALSE,
     n_ss = NULL,
+    per_unit = 1,
     first_dose_time = lubridate::now()) {
 
   reg <- structure(list(amt = amt,
                         interval = interval,
                         n = n,
                         type = type,
-                        t_inf = t_inf), class = "regimen")
+                        t_inf = t_inf,
+                        per_unit = per_unit), class = "regimen")
   if(checks) {
     if(any(reg$amt < 0)) {
       reg$amt[reg$amt < 0] <- 0
@@ -118,6 +120,9 @@ new_regimen <- function(
   }
   if(length(reg$type) != reg$n) {
     reg$type <- rep(reg$type[1], reg$n)
+  }
+  if(length(reg$per_unit) != reg$n) {
+    reg$per_unit <- rep(reg$per_unit[1], reg$n)
   }
   if(any(reg$type == "bolus")) {
     reg$t_inf[reg$type == "bolus"] <- NA

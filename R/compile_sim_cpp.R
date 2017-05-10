@@ -175,7 +175,7 @@ compile_sim_cpp <- function(
       cpp_code[idx7] <- paste0(cpp_code[idx7], "\n      scale = ", obs$scale[1], ";")
       cpp_code[idx8] <- cov_scale
       cpp_code[idx12] <- paste0(cpp_code[idx12], "\n      obs.insert(obs.end(), tmp.y[k][", obs$cmt[1]-1,"] / scale);")
-      cpp_code[idx13] <- paste0('    comb["obs"] = obs;\n');
+      cpp_code[idx13] <- paste0('  comb["obs"] = obs;\n');
       cpp_code[idx14] <- "  std::vector<double> obs;"
     } else {
       for(k in 1:length(obs$cmt)) {
@@ -200,7 +200,7 @@ compile_sim_cpp <- function(
     cpp_code[idx9] <- shift_state_indices(pk_code, -1)
   }
   if(!is.null(dose$bioav)) {
-    cpp_code[idx10] <- paste0("      bioav = ", dose$bioav, ";")
+    cpp_code[idx10] <- paste0("   bioav = ", dose$bioav, ";")
   }
   if(!is.null(dose_code)) {
     cpp_code[idx11] <- shift_state_indices(dose_code, -1)
