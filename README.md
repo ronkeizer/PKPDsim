@@ -5,13 +5,9 @@
 
 `PKPDsim` is a library for numerical integration of ODE systems, in particular pharmacokinetic-pharmacodynamic (PK-PD) mixed-effects models.
 
-## Installation
+## Important!
 
-```
-library(devtools)
-install_github("ronkeizer/PKPDsim")
-library(PKPDsim)
-```
+**To allow sustained development of `PKPDsim`, the developmen repository has moved to `InsightRX/PKPDsim`. We will not be updating `ronkeizer/PKPDsim` anymore.**
 
 ## Documentation
 
